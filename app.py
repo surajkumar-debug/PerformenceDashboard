@@ -201,11 +201,13 @@ def safe_nunique(df, col):
 PLOT_LAYOUT = dict(
     paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#e2e8f0', family='Inter'),
-    margin=dict(l=10, r=10, t=40, b=10),
     legend=dict(bgcolor='rgba(30,33,48,0.8)', bordercolor='#2d3250', borderwidth=1),
     xaxis=dict(gridcolor='#1e2130', linecolor='#2d3250'),
     yaxis=dict(gridcolor='#1e2130', linecolor='#2d3250')
 )
+# Default margins - use separately
+MARGIN_DEFAULT = dict(l=10, r=10, t=40, b=10)
+MARGIN_COMPACT = dict(l=5,  r=5,  t=40, b=5)
 COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#84cc16','#ec4899','#14b8a6']
 
 # ─────────────────────────────────────────────
@@ -389,7 +391,7 @@ def main():
                 fig = make_subplots(specs=[[{"secondary_y": True}]])
                 fig.add_trace(go.Bar(x=monthly['_month'], y=monthly['Total'], name='Total Value', marker_color='#3b82f6', opacity=0.8), secondary_y=False)
                 fig.add_trace(go.Scatter(x=monthly['_month'], y=monthly['Count'], name='Count', line=dict(color='#f59e0b', width=2), mode='lines+markers'), secondary_y=True)
-                fig.update_layout(title='📅 Monthly Trend', **PLOT_LAYOUT)
+                fig.update_layout(title='📅 Monthly Trend', margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
                 st.plotly_chart(fig, use_container_width=True)
 
         with col2:
@@ -398,7 +400,7 @@ def main():
                 fig = px.bar(x=user_sum.values, y=user_sum.index, orientation='h',
                              title='👤 Top 10 Users by Value', color=user_sum.values,
                              color_continuous_scale='Blues', labels={'x':'Total Value','y':'User'})
-                fig.update_layout(**PLOT_LAYOUT)
+                fig.update_layout(margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
                 fig.update_coloraxes(showscale=False)
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -447,7 +449,7 @@ def main():
                 pivot = df.pivot_table(index=usr_col, columns='_month', values=amt_col, aggfunc='sum', fill_value=0)
                 fig = px.imshow(pivot, aspect='auto', color_continuous_scale='Blues',
                                 title='User Performance Heatmap (Monthly)', labels=dict(x='Month', y='User', color='Value'))
-                fig.update_layout(**PLOT_LAYOUT)
+                fig.update_layout(margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
                 st.plotly_chart(fig, use_container_width=True)
 
             st.markdown('<div class="section-header">📋 User Summary Table</div>', unsafe_allow_html=True)
@@ -476,7 +478,7 @@ def main():
             fig.add_trace(go.Bar(x=trend[period_col].astype(str), y=trend['Total'], name='Total Value', marker_color='#3b82f6', opacity=0.8), row=1, col=1)
             fig.add_trace(go.Scatter(x=trend[period_col].astype(str), y=trend['Total'], name='Trend', line=dict(color='#f59e0b', width=2, dash='dot'), mode='lines'), row=1, col=1)
             fig.add_trace(go.Bar(x=trend[period_col].astype(str), y=trend['Count'], name='Count', marker_color='#10b981', opacity=0.7), row=2, col=1)
-            fig.update_layout(title=f"📈 {gran_label} Performance Trend", height=500, **PLOT_LAYOUT)
+                            fig.update_layout(title=f"📈 {gran_label} Performance Trend", height=500, margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
             st.plotly_chart(fig, use_container_width=True)
 
         if '_weekday' in df.columns:
@@ -537,7 +539,7 @@ def main():
                 prev_u['Period'] = f'Previous ({prev_m_str})'
                 fig = px.bar(pd.concat([curr_u, prev_u]), x=usr_col, y=amt_col, color='Period',
                              barmode='group', title='📊 User: Current vs Last Month', color_discrete_sequence=['#3b82f6','#94a3b8'])
-                fig.update_layout(**PLOT_LAYOUT)
+                fig.update_layout(margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
                 st.plotly_chart(fig, use_container_width=True)
             with col2:
                 curr_t = safe_sum(curr_month_df, amt_col)
@@ -552,7 +554,7 @@ def main():
                     increasing={"marker":{"color":"#10b981"}},
                     totals={"marker":{"color":"#3b82f6"}}
                 ))
-                fig.update_layout(title="💧 Month-over-Month Waterfall", **PLOT_LAYOUT)
+                fig.update_layout(title="💧 Month-over-Month Waterfall", margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
                 st.plotly_chart(fig, use_container_width=True)
 
         st.markdown("---")
@@ -580,7 +582,7 @@ def main():
             pw_u_df['Period'] = 'Last Week'
             fig = px.bar(pd.concat([cw_u_df, pw_u_df]), x=usr_col, y=amt_col, color='Period',
                          barmode='group', title='📊 User: Current vs Last Week', color_discrete_sequence=['#10b981','#94a3b8'])
-            fig.update_layout(**PLOT_LAYOUT)
+            fig.update_layout(margin=MARGIN_DEFAULT, **PLOT_LAYOUT)
             st.plotly_chart(fig, use_container_width=True)
 
     # ════════════════════════════════════════
